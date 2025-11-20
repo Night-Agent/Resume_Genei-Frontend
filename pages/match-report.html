@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Report - Resume Screening System</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles-additional.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <!-- Match Report Section -->
+    <section class="match-report-section">
+        <div class="container">
+            <div class="report-header">
+                <button class="btn-back" onclick="history.back()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div>
+                    <h1>Resume Match Report</h1>
+                    <p class="report-date">Generated on <span id="reportDate">Loading...</span></p>
+                </div>
+                <button class="btn-download" id="downloadReportBtn">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.5 12.5v2.5a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-2.5M10 12.5V2.5M10 12.5l-4-4M10 12.5l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Download PDF
+                </button>
+            </div>
+
+            <!-- Overall Match Score -->
+            <div class="report-card score-card">
+                <div class="report-card-header">
+                    <h2>Overall Match Score</h2>
+                </div>
+                <div class="report-card-body">
+                    <div class="score-container">
+                        <div class="score-circle-wrapper">
+                            <svg class="score-circle" viewBox="0 0 200 200" id="scoreCircle">
+                                <circle class="score-bg" cx="100" cy="100" r="85" fill="none" stroke="#ecfdf5" stroke-width="20"/>
+                                <circle class="score-progress" cx="100" cy="100" r="85" fill="none" stroke="url(#scoreGradient)" stroke-width="20" stroke-linecap="round" stroke-dasharray="534.07" stroke-dashoffset="534.07"/>
+                                <defs>
+                                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#059669"/>
+                                        <stop offset="100%" stop-color="#34d399"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="score-text">
+                                <div class="score-number" id="scoreNumber">0</div>
+                                <div class="score-label">Match Score</div>
+                            </div>
+                        </div>
+                        <div class="score-description">
+                            <p id="scoreInterpretation">Loading analysis...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Experience Match -->
+            <div class="report-card">
+                <div class="report-card-header">
+                    <h2>Experience Match</h2>
+                    <div class="match-badge" id="experienceBadge">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text">Loading...</span>
+                    </div>
+                </div>
+                <div class="report-card-body">
+                    <div class="experience-details" id="experienceDetails">
+                        <div class="loading-placeholder">Analyzing experience match...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Comparison -->
+            <div class="report-card">
+                <div class="report-card-header">
+                    <h2>Skills Analysis</h2>
+                </div>
+                <div class="report-card-body">
+                    <div class="skills-comparison">
+                        <!-- Matched Skills -->
+                        <div class="skill-section skill-matched">
+                            <div class="skill-section-header">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="10" cy="10" r="8" fill="#d1fae5"/>
+                                    <path d="M14 7l-5 5-3-3" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <h3>Matched Skills</h3>
+                                <span class="skill-count" id="matchedCount">0</span>
+                            </div>
+                            <div class="skill-chips" id="matchedSkills">
+                                <div class="loading-placeholder">Loading...</div>
+                            </div>
+                        </div>
+
+                        <!-- Missing Skills -->
+                        <div class="skill-section skill-missing">
+                            <div class="skill-section-header">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="10" cy="10" r="8" fill="#fee2e2"/>
+                                    <path d="M7 7l6 6M13 7l-6 6" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <h3>Missing Skills</h3>
+                                <span class="skill-count" id="missingCount">0</span>
+                            </div>
+                            <div class="skill-chips" id="missingSkills">
+                                <div class="loading-placeholder">Loading...</div>
+                            </div>
+                        </div>
+
+                        <!-- Extra Skills -->
+                        <div class="skill-section skill-extra">
+                            <div class="skill-section-header">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="10" cy="10" r="8" fill="#dbeafe"/>
+                                    <path d="M10 6v8M6 10h8" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                                <h3>Additional Skills</h3>
+                                <span class="skill-count" id="extraCount">0</span>
+                            </div>
+                            <div class="skill-chips" id="extraSkills">
+                                <div class="loading-placeholder">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyword Density -->
+            <div class="report-card">
+                <div class="report-card-header">
+                    <h2>Keyword Analysis</h2>
+                </div>
+                <div class="report-card-body">
+                    <div class="keyword-analysis">
+                        <div class="keyword-stats">
+                            <div class="keyword-stat">
+                                <label>Keywords Found</label>
+                                <span id="keywordsFound">0</span>
+                            </div>
+                            <div class="keyword-stat">
+                                <label>Keywords Missing</label>
+                                <span id="keywordsMissing">0</span>
+                            </div>
+                            <div class="keyword-stat">
+                                <label>Match Rate</label>
+                                <span id="keywordMatchRate">0%</span>
+                            </div>
+                        </div>
+                        <div class="keyword-list" id="keywordList">
+                            <div class="loading-placeholder">Analyzing keywords...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills & Salary Analytics -->
+            <div class="report-card charts-card">
+                <div class="report-card-header">
+                    <h2>Skills & Salary Analytics</h2>
+                </div>
+                <div class="report-card-body">
+                    <div class="charts-grid">
+                        <!-- Skills Distribution Pie Chart -->
+                        <div class="chart-container">
+                            <h3 class="chart-title">Skills Distribution</h3>
+                            <canvas id="skillsDistributionChart"></canvas>
+                        </div>
+
+                        <!-- Salary Impact Chart -->
+                        <div class="chart-container">
+                            <h3 class="chart-title">Salary Impact Analysis</h3>
+                            <canvas id="salaryImpactChart"></canvas>
+                            <div class="salary-legend" id="salaryLegend">
+                                <div class="salary-item">
+                                    <span class="label">Current Salary Range:</span>
+                                    <span class="value" id="currentSalary">$0 - $0</span>
+                                </div>
+                                <div class="salary-item">
+                                    <span class="label">Potential with Missing Skills:</span>
+                                    <span class="value potential" id="potentialSalary">$0 - $0</span>
+                                </div>
+                                <div class="salary-item increase">
+                                    <span class="label">Estimated Increase:</span>
+                                    <span class="value" id="salaryIncrease">+$0 (+0%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills Gap Bar Chart -->
+                    <div class="chart-container full-width">
+                        <h3 class="chart-title">Top Missing Skills by Demand</h3>
+                        <canvas id="skillsGapChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggestions -->
+            <div class="report-card suggestions-card">
+                <div class="report-card-header">
+                    <h2>Improvement Suggestions</h2>
+                    <div class="suggestions-count">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 3v14M3 10h14" stroke="#059669" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span id="suggestionCount">0</span> Suggestions
+                    </div>
+                </div>
+                <div class="report-card-body">
+                    <div class="suggestions-list" id="suggestionsList">
+                        <div class="loading-placeholder">Generating personalized suggestions...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="report-actions">
+                <button class="btn-secondary" onclick="window.location.href='dashboard.html'">
+                    Back to Dashboard
+                </button>
+                <button class="btn-primary" onclick="window.location.href='upload.html'">
+                    Analyze Another Resume
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="../js/loader.js"></script>
+    <script src="../js/components/skill-chip.js"></script>
+    <script src="../js/components/score-circle.js"></script>
+    <script src="../js/components/suggestions-card.js"></script>
+    <script src="../js/match-report.js"></script>
+</body>
+</html>
