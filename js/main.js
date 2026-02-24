@@ -1,31 +1,37 @@
-// Main Homepage Functionality
+// Main Homepage Functionality - Enhanced with Services
 
 // Initialize homepage
 document.addEventListener('DOMContentLoaded', () => {
+    checkAuthStatus();
     initScrollAnimations();
     initStatCounters();
     initSmoothScrolling();
-    checkAuthStatus();
+    initMobileMenu();
+    initScrollToTop();
 });
 
-// Check authentication status and update UI
+/**
+ * Check authentication status and update UI
+ */
 function checkAuthStatus() {
-    const authToken = localStorage.getItem('authToken');
+    const isAuthenticated = StorageService.isAuthenticated();
     const loginBtn = document.querySelector('.login-btn');
     const dashboardBtn = document.querySelector('.dashboard-btn');
     
-    if (authToken) {
-        // User is logged in
+    if (isAuthenticated) {
+        // User is logged in - show dashboard button
         if (loginBtn) loginBtn.style.display = 'none';
         if (dashboardBtn) dashboardBtn.style.display = 'flex';
     } else {
-        // User is logged out
+        // User is logged out - show login button
         if (loginBtn) loginBtn.style.display = 'flex';
         if (dashboardBtn) dashboardBtn.style.display = 'none';
     }
 }
 
-// Initialize scroll animations
+/**
+ * Initialize scroll animations using Intersection Observer
+ */
 function initScrollAnimations() {
     const observerOptions = {
         threshold: 0.1,
@@ -41,28 +47,25 @@ function initScrollAnimations() {
         });
     }, observerOptions);
 
-    // Observe feature cards
-    document.querySelectorAll('.feature-card').forEach(card => {
-        observer.observe(card);
-    });
+    // Observe all animatable elements
+    const selectorsToObserve = [
+        '.feature-card',
+        '.step-card',
+        '.testimonial-card',
+        '.stat-card',
+        '.about-stat-card'
+    ];
 
-    // Observe step cards
-    document.querySelectorAll('.step-card').forEach(card => {
-        observer.observe(card);
-    });
-
-    // Observe testimonial cards
-    document.querySelectorAll('.testimonial-card').forEach(card => {
-        observer.observe(card);
-    });
-
-    // Observe stat cards
-    document.querySelectorAll('.stat-card, .about-stat-card').forEach(card => {
-        observer.observe(card);
+    selectorsToObserve.forEach(selector => {
+        document.querySelectorAll(selector).forEach(element => {
+            observer.observe(element);
+        });
     });
 }
 
-// Initialize stat counters with animation
+/**
+ * Initialize animated stat counters
+ */
 function initStatCounters() {
     const statNumbers = document.querySelectorAll('.stat-number');
     
@@ -100,7 +103,7 @@ function initStatCounters() {
                 } else if (text.includes('%')) {
                     const num = parseInt(text.replace('%', ''));
                     animateCounter(element, num, '%');
-                } else {
+                } else if (text.includes('+')) {
                     const num = parseInt(text.replace('+', ''));
                     animateCounter(element, num, '+');
                 }
@@ -113,7 +116,9 @@ function initStatCounters() {
     statNumbers.forEach(stat => observer.observe(stat));
 }
 
-// Initialize smooth scrolling for anchor links
+/**
+ * Initialize smooth scrolling for anchor links
+ */
 function initSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -121,20 +126,15 @@ function initSmoothScrolling() {
             const target = document.querySelector(this.getAttribute('href'));
             
             if (target) {
-                const headerOffset = 80;
-                const elementPosition = target.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
+                Utils.smoothScroll(target);
             }
         });
     });
 }
 
-// Mobile menu toggle (if needed in future)
+/**
+ * Initialize mobile menu toggle
+ */
 function initMobileMenu() {
     const menuToggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');
@@ -142,25 +142,37 @@ function initMobileMenu() {
     if (menuToggle && navLinks) {
         menuToggle.addEventListener('click', () => {
             navLinks.classList.toggle('active');
+            
+            // Close menu when a link is clicked
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                });
+            });
         });
     }
 }
 
-// Scroll to top button (if needed)
+/**
+ * Initialize scroll-to-top button
+ */
 function initScrollToTop() {
     const scrollBtn = document.createElement('button');
     scrollBtn.className = 'scroll-to-top';
     scrollBtn.innerHTML = '↑';
+    scrollBtn.setAttribute('title', 'Back to top');
     scrollBtn.style.display = 'none';
     document.body.appendChild(scrollBtn);
     
-    window.addEventListener('scroll', () => {
+    const throttledScroll = Utils.throttle(() => {
         if (window.pageYOffset > 300) {
             scrollBtn.style.display = 'flex';
         } else {
             scrollBtn.style.display = 'none';
         }
-    });
+    }, 200);
+    
+    window.addEventListener('scroll', throttledScroll);
     
     scrollBtn.addEventListener('click', () => {
         window.scrollTo({
@@ -170,12 +182,14 @@ function initScrollToTop() {
     });
 }
 
-// Handle CTA button clicks
+/**
+ * Handle CTA button clicks
+ */
 document.addEventListener('click', (e) => {
     if (e.target.closest('.cta-button')) {
         const uploadSection = document.querySelector('.upload-section');
         if (uploadSection) {
-            uploadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            Utils.smoothScroll(uploadSection);
         }
     }
 });
